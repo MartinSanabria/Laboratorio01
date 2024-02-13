@@ -1,2 +1,9 @@
-com/mycompany/laboratorio01/JakartaRestConfiguration.class
+DBConection/Conexion.class
+Controllers/PedidoController.class
+Controllers/ClientController.class
+DaoModels/DaoClientes.class
 com/mycompany/laboratorio01/resources/JakartaEE8Resource.class
+Models/Clientes.class
+com/mycompany/laboratorio01/JakartaRestConfiguration.class
+Models/Pedidos.class
+DaoModels/DaoPedidos.class

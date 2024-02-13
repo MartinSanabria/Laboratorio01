@@ -123,6 +123,7 @@ public class DaoPedidos {
             ps.setDate(2,pedido.getFecha());
             ps.setDouble(3,pedido.getTotal());
             ps.setInt(4,pedido.getEstado());
+            ps.setInt(5,pedido.getId());
             int filasAfectadas=ps.executeUpdate();
             if(filasAfectadas>0){
                 return true;
@@ -131,5 +132,29 @@ public class DaoPedidos {
 
         }
         return false;
+    }
+        
+        
+         public List consultarPorCliente(int cliente){
+
+        ArrayList<Pedidos> lista=new ArrayList<>();
+       String query = "SELECT * FROM pedidos WHERE id_cliente = ?";
+        try {
+            ps=CN.getConection().prepareStatement(query);
+            ps.setInt(1,cliente);
+            rs=ps.executeQuery();
+            while(rs.next()){
+               Pedidos pedido=new Pedidos();
+                pedido.setId(rs.getInt("id"));
+                pedido.setId_cliente(rs.getInt("id_cliente"));
+                pedido.setFecha(rs.getDate("fecha"));
+                pedido.setTotal(rs.getDouble("total"));
+                pedido.setEstado(rs.getInt("estado"));
+                lista.add(pedido);
+            }
+        }catch (Exception e){
+
+        }
+        return lista;
     }
 }

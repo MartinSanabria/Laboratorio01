@@ -79,7 +79,7 @@ public class DaoClientes {
     }
      
      public boolean agregar(Clientes cliente){
-        String sql="insert into alumno(nombre,direccion,telefono,email) "
+        String sql="insert into clientes(nombre,direccion,telefono,email) "
                 + " values(?,?,?,?)";
         try {
             ps=CN.getConection().prepareStatement(sql);
@@ -113,7 +113,7 @@ public class DaoClientes {
     }
         
         public boolean actualizar(Clientes cliente){
-        String sql="update alumno set nombre=?,direccion=?,telefono=?,email=? "
+        String sql="update clientes set nombre=?,direccion=?,telefono=?,email=? "
                 + "  where id=?";
         try {
             ps=CN.getConection().prepareStatement(sql);
@@ -121,14 +121,17 @@ public class DaoClientes {
             ps.setString(2,cliente.getDireccion());
             ps.setString(3,cliente.getTelefono());
             ps.setString(4,cliente.getEmail());
+            ps.setInt(5,cliente.getId());
             int filasAfectadas=ps.executeUpdate();
             if(filasAfectadas>0){
                 return true;
             }
         }catch (Exception e){
-
+            e.printStackTrace();
         }
         return false;
     }
+        
+        
     
 }

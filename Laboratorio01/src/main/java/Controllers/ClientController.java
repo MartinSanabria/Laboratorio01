@@ -4,8 +4,14 @@
  */
 package Controllers;
 
+import DaoModels.DaoClientes;
+import DaoModels.DaoPedidos;
+import Models.Clientes;
+import Models.Pedidos;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -57,7 +63,35 @@ public class ClientController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+         try {
+           if(request.getParameter("action")!=null){
+                if(request.getParameter("action").equals("edit")){
+                int id=Integer.parseInt(request.getParameter("id"));
+                DaoClientes clientDao = new DaoClientes();
+                 //obtener los datos
+                Clientes client = (Clientes) clientDao.buscarPorID(id);
+                request.setAttribute("ClientEdit", client);
+                 //falta traer la persona de la base de datos
+                 //y pasarlo como atributo
+                RequestDispatcher dispatcher2=request.getRequestDispatcher("/Cliente/edit.jsp");
+                dispatcher2.forward(request,response);
+                }
+           }
+        } catch (Exception e) {
+            e.printStackTrace(); //
+        }
+        
+            DaoClientes clientDao = new DaoClientes();
+            //ir al modelo para acceder a los datos
+            //obtener los datos
+            List<Clientes> Clients = clientDao.consultaGeneral();
+            
+            //pasarlos a la vista
+            request.setAttribute("clientes", Clients);
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/Cliente/ClientView.jsp");
+
+            // Envía la solicitud al dispatcher.
+            dispatcher.forward(request, response);
     }
 
     /**
@@ -71,7 +105,63 @@ public class ClientController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+         if (request.getParameter("action") != null){
+            
+            if(request.getParameter("action").equals("create")){
+                
+                 DaoClientes institutoDao = new DaoClientes();
+                 Clientes cat=new Clientes(request.getParameter("nombre"), request.getParameter("direccion"),
+                                           request.getParameter("telefono"),request.getParameter("email"));
+                
+                 institutoDao.agregar(cat);
+                 String successMessage = "Cliente agregado satisfactoriamente";
+
+                request.setAttribute("successMessage", successMessage);
+                 
+            } else if(request.getParameter("action").equals("update")){
+                
+                int idInstituto=Integer.parseInt(request.getParameter("id"));
+               DaoClientes institutoDao = new DaoClientes();
+                //obtener los datos
+                Clientes client = (Clientes) institutoDao.buscarPorID(idInstituto);
+                client.setNombre(request.getParameter("nombre"));
+                client.setDireccion(request.getParameter("direccion"));
+                client.setTelefono(request.getParameter("telefono"));
+                client.setEmail(request.getParameter("email"));
+                institutoDao.actualizar(client);
+                 String successMessage = "Cliente actualizado satisfactoriamente";
+
+                request.setAttribute("successMessage", successMessage);
+                //ir al modelo para acceder a los datos
+                //obtener los datos
+
+
+           }else if(request.getParameter("action").equals("delete")){
+                 int idCliente=Integer.parseInt(request.getParameter("id"));
+           
+                DaoClientes category = new DaoClientes();
+                DaoPedidos product = new DaoPedidos();
+
+                // Consultar productos por categoría
+                List<Pedidos> productos = product.consultarPorCliente(idCliente);
+
+                if (productos.isEmpty()) {
+                    // No hay productos asociados, se puede eliminar la categoría
+                    category.eliminar(idCliente);
+                    String successMessage = "Cliente eliminada satisfactoriamente";
+                    request.setAttribute("successMessage", successMessage);
+                } else {
+                    // Hay productos asociados, no se puede eliminar la categoría
+                    String errorMessage = "Accion denegada, existen pedidos para este cliente.";
+                    request.setAttribute("errorMessage", errorMessage);
+                }
+            }
+        }
+            
+       
+          doGet(request,response);
+        
     }
 
     /**
