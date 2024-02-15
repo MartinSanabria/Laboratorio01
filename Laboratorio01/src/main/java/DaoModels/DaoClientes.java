@@ -10,7 +10,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -132,6 +134,27 @@ public class DaoClientes {
         return false;
     }
         
-        
+         public Map<String, Integer> obtenerTop10Clientes() {
+        Map<String, Integer> top10Clientes = new HashMap<>();
+        String sql = "SELECT c.nombre AS cliente, COUNT(p.id_cliente) AS num_pedidos " +
+                     "FROM clientes c " +
+                     "JOIN pedidos p ON c.id = p.id_cliente " +
+                     "GROUP BY c.nombre " +
+                     "ORDER BY num_pedidos ASC " +
+                     "LIMIT 10";
+        try {
+            con = CN.getConection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                String nombreCliente = rs.getString("cliente");
+                int numPedidos = rs.getInt("num_pedidos");
+                top10Clientes.put(nombreCliente, numPedidos);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return top10Clientes;
+    }
     
 }
